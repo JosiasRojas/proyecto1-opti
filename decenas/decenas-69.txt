@@ -1,0 +1,9 @@
+Solucion:
+Valor Objetivo Z = 448.73333333333335
+Asignacion de Variables
+x1 = 0.0
+x2 = 0.0
+x3 = 0.0
+x4 = 8.466666666666667
+x5 = 0.0
+x6 = 0.0
