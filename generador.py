@@ -38,8 +38,8 @@ for iteracion in range(10):
     naturaleza = ""
 
     # 0-99 variables
-    variables = random.randint(10,15)
-    materias_primas = random.randint(10,15)
+    variables = random.randint(1000,1500)
+    materias_primas = random.randint(1000,8000)
     disponibilidad = random.randint(2,1000)
     utilidades = random.randint(2,1000)
 
@@ -82,7 +82,7 @@ for iteracion in range(10):
     start_time = time.time()
     status = solver.Solve()
 
-    with open("test-{}.txt".format(iteracion),"w") as f:
+    with open("test1000-{}.txt".format(iteracion),"w") as f:
         if status == pywraplp.Solver.OPTIMAL:
             f.write("Solucion:\n")
             f.write("Valor Objetivo Z = {}\n".format(solver.Objective().Value()))
@@ -94,6 +94,7 @@ for iteracion in range(10):
 
         # Termino de la solucion
         f.write("Tiempo: {}\n".format(time.time() - start_time))
+        f.write("Iteraciones: {}\n".format(solver.iterations()))
 
         f.write("\n===== Modelo =====\n\n")
         f.write(funcion_objetivo)
