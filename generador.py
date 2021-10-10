@@ -1,5 +1,7 @@
 import random
 from ortools.linear_solver import pywraplp
+import time
+import psutil
 
 def generar(instancias, materias_primas, d, u):
 
@@ -21,21 +23,13 @@ def generar(instancias, materias_primas, d, u):
             cantidad = random.randint(0,d)
             maxima_cantidad = max(maxima_cantidad,cantidad)
             cantidades_a_mezclar[i].append(cantidad)
-        # cantidades_a_mezclar = random.sample(range(0,d), materias_primas)
-        # total_a_mezclar = sum(cantidades_a_mezclar[i])
-        matriz.append(cantidades_a_mezclar[i])
-        # matriz.append(list(map(lambda x: round(x / total_a_mezclar,2), cantidades_a_mezclar[i])))
+
+        matriz.append(cantidades_a_mezclar[i])        
 
     for _ in range(materias_primas):
         disponibilidad.append(random.randint(maxima_cantidad,maxima_cantidad*100))
 
     return (matriz,disponibilidad,utilidades)
-    
-
-# variables = int(input("Numero de variables: "))
-# materias_primas = int(input("Numero de materias primas: "))
-# disponibilidad = int(input("Maxima a usar de producto: "))
-# utilidades = int(input("Maxima utilidad: "))
 
 for iteracion in range(10):
 
@@ -55,20 +49,19 @@ for iteracion in range(10):
     x = {}
     for i in range(len(m)):
         x[i] =  solver.NumVar(0, infinity, 'x[%i]' %i)
-    # print("vars:",solver.NumVariables())
 
     # Restricciones
     for i in range(len(m[0])):
         ct1 = solver.Sum(m[j][i] * x[j] for j in range(len(m)))
         solver.Add(ct1 <= d[i])
 
-    # print("constrains:",solver.NumConstraints())
-
     Z = solver.Sum(u[i] * x[i] for i in range(len(u)))
     solver.Maximize(Z)
+    # Momento en que comienza a resolver
+    start_time = time.time()
     status = solver.Solve()
 
-    with open("decenas-{}.txt".format(iteracion),"w") as f:
+    with open("test-{}.txt".format(iteracion),"w") as f:
         if status == pywraplp.Solver.OPTIMAL:
             f.write("Solucion:\n")
             f.write("Valor Objetivo Z = {}\n".format(solver.Objective().Value()))
@@ -77,6 +70,11 @@ for iteracion in range(10):
                 f.write("x{} = {}\n".format(i+1,x[i].solution_value()))
         else:
             f.write("El problema no tiene solucion optima")
+
+        # Termino de la solucion
+        f.write("Tiempo: {}\n".format(time.time() - start_time))
+        f.write("CPU: {}\n".format(psutil.cpu_percent()))
+        f.write("MEMORY: {}\n".format(psutil.virtual_memory()._asdict()))
 
 
 
