@@ -33,9 +33,13 @@ def generar(instancias, materias_primas, d, u):
 
 for iteracion in range(10):
 
+    funcion_objetivo = "max z = "
+    restricciones = ""
+    naturaleza = ""
+
     # 0-99 variables
-    variables = random.randint(1000,1500)
-    materias_primas = random.randint(1000,1500)
+    variables = random.randint(10,15)
+    materias_primas = random.randint(10,15)
     disponibilidad = random.randint(2,1000)
     utilidades = random.randint(2,1000)
 
@@ -49,14 +53,31 @@ for iteracion in range(10):
     x = {}
     for i in range(len(m)):
         x[i] =  solver.NumVar(0, infinity, 'x[%i]' %i)
+        # Para imprimir modelo
+        naturaleza += "x{} >= 0\n".format(i+1)
 
     # Restricciones
     for i in range(len(m[0])):
         ct1 = solver.Sum(m[j][i] * x[j] for j in range(len(m)))
         solver.Add(ct1 <= d[i])
+        # Para imprimir modelo
+        for j in range(len(m)):
+            restricciones += "{}x{}".format(m[j][i],j)
+            if(j < len(m) - 1):
+                restricciones += " + "
+        restricciones += " <= {}\n".format(d[i])
+
+            
 
     Z = solver.Sum(u[i] * x[i] for i in range(len(u)))
     solver.Maximize(Z)
+    # Para imprimir modelo
+    for i in range(len(u)):
+        funcion_objetivo += "{}x{}".format(u[i],i+1)
+        if(i < len(u) - 1):
+            funcion_objetivo += " + "
+    funcion_objetivo += "\n"
+
     # Momento en que comienza a resolver
     start_time = time.time()
     status = solver.Solve()
@@ -73,8 +94,15 @@ for iteracion in range(10):
 
         # Termino de la solucion
         f.write("Tiempo: {}\n".format(time.time() - start_time))
-        f.write("CPU: {}\n".format(psutil.cpu_percent()))
-        f.write("MEMORY: {}\n".format(psutil.virtual_memory()._asdict()))
+
+        f.write("\n===== Modelo =====\n\n")
+        f.write(funcion_objetivo)
+        f.write("\n")
+        f.write(restricciones)
+        f.write("\n")
+        f.write(naturaleza)
+        # f.write("CPU: {}\n".format(psutil.cpu_percent()))
+        # f.write("MEMORY: {}\n".format(psutil.virtual_memory()._asdict()))
 
 
 
