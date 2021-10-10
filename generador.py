@@ -62,7 +62,7 @@ for iteracion in range(10):
         solver.Add(ct1 <= d[i])
         # Para imprimir modelo
         for j in range(len(m)):
-            restricciones += "{}x{}".format(m[j][i],j)
+            restricciones += "{}x{}".format(m[j][i],j+1)
             if(j < len(m) - 1):
                 restricciones += " + "
         restricciones += " <= {}\n".format(d[i])
